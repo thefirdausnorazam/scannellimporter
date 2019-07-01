@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author firdaus.norazam
  */
 @RestController
-public class ImporterController {
+public class ControllerConverterController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 

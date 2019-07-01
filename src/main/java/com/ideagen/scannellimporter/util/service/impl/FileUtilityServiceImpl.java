@@ -6,6 +6,7 @@
 package com.ideagen.scannellimporter.util.service.impl;
 
 import com.ideagen.scannellimporter.ServiceException;
+import com.ideagen.scannellimporter.entity.RetrievedController;
 import com.ideagen.scannellimporter.util.service.FileUtilityService;
 import java.io.File;
 import java.nio.file.Files;
@@ -48,7 +49,7 @@ public class FileUtilityServiceImpl implements FileUtilityService {
     }
 
     @Override
-    public Path getPathFromImportLine(String importLine) throws ServiceException {
+    public Path findPathFromImportLine(String importLine) throws ServiceException {
         try {
             importLine = importLine.replace("import", "").trim();
             List<String> importLines = Arrays.asList(importLine.split("\\."));
@@ -99,10 +100,55 @@ public class FileUtilityServiceImpl implements FileUtilityService {
                     }
                 }
             }
-            
+
             return null;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public Path findPathFromClass(RetrievedController retrievedController, String inputPath) throws ServiceException {
+        try {
+            //assuming the class name is com.something.something.theclassnamewewant
+            String[] classNames = retrievedController.getClassName()
+                    .trim()
+                    .split("\\.");
+
+            String actualClassName = classNames[classNames.length - 1];
+
+            String filaName = actualClassName + ".java";
+
+            String packageName = Arrays.asList(classNames)
+                    .stream()
+                    .filter(t -> !t.equals(actualClassName))
+                    .collect(Collectors.joining("."));
+
+            LOGGER.info("Finding original controller [inputPath : {}] [fileName : {}] [packageName : {}]",
+                    inputPath, filaName, packageName);
+
+            try ( Stream<Path> paths = Files.walk(Paths.get(inputPath))) {
+                List<Path> pathList = paths
+                        .filter(Files::isRegularFile)
+                        .filter(t -> t.toFile().getName().equals(filaName))
+                        .collect(Collectors.toList());
+
+                for (Path path : pathList) {
+                    List<String> fileLines = Files.lines(path)
+                            .collect(Collectors.toList());
+
+                    if (fileLines.stream()
+                            .findFirst()
+                            .get()
+                            .contains(packageName)) {
+                        return path;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return null;
     }
 }

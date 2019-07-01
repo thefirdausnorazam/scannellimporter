@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ideagen.scannellimporter.model.xml;
+package com.ideagen.scannellimporter.mode.bean.xml;
 
 import java.util.List;
-import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -20,7 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ControllerServletBean {
     
-    @OneToMany
     @XmlElement(name = "bean")
     private List<Bean> bean;
 

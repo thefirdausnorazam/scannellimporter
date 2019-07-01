@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  *
  * @author firdaus.norazam
  */
-@Component
+@Component("formControllerGeneratorStep3")
 public class Step3Impl implements Step3 {
     
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());

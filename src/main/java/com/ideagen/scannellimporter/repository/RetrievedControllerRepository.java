@@ -15,10 +15,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author firdaus.norazam
  */
 public interface RetrievedControllerRepository extends JpaRepository<RetrievedController, Integer> {
-    
+
     Optional<List<RetrievedController>> findByParent(String parent);
-    
+
     Optional<RetrievedController> findByBeanIdAndOriginFile(String beanId, String originFile);
-    
+
     Optional<RetrievedController> findByBeanNameAndOriginFile(String beanName, String originFile);
+
+    Optional<List<RetrievedController>> findByClassNameContaining(String className);
 }

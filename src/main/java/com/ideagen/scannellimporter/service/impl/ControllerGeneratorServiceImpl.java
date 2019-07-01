@@ -11,8 +11,10 @@ import com.ideagen.scannellimporter.model.ImportCommand;
 import com.ideagen.scannellimporter.repository.RetrievedControllerRepository;
 import com.ideagen.scannellimporter.service.ControllerGeneratorService;
 import com.ideagen.scannellimporter.service.FormControllerGeneratorService;
+import com.ideagen.scannellimporter.service.MultiActionControllerGeneratorService;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,9 +40,14 @@ public class ControllerGeneratorServiceImpl implements ControllerGeneratorServic
     private RetrievedControllerRepository retrievedControllerRepository;
 
     @Autowired
+    private MultiActionControllerGeneratorService multiActionControllerGeneratorService;
+
+    @Autowired
     private FormControllerGeneratorService formControllerGeneratorService;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(16);
+
+    private final String MULTI_ACTION_CONTROLLER_CLASS_NAME = "MultiActionController";
 
     @Override
     public void generate(ImportCommand importCommand, int retrievedControllerId) {
@@ -54,6 +61,11 @@ public class ControllerGeneratorServiceImpl implements ControllerGeneratorServic
                 throw new ServiceException("Failed to retrieve retrievedController [id=" + retrievedControllerId + "]");
             }
 
+            if (retrievedController.getClassName().contains(MULTI_ACTION_CONTROLLER_CLASS_NAME)) {
+                multiActionControllerGeneratorService.generate(retrievedController, importCommand);
+                return;
+            }
+
             formControllerGeneratorService.generate(
                     retrievedController,
                     importCommand.getInputPath(),
@@ -65,51 +77,84 @@ public class ControllerGeneratorServiceImpl implements ControllerGeneratorServic
 
     @Override
     public void generate(ImportCommand importCommand) {
-        List<RetrievedController> retrievedControllers
+        List<RetrievedController> formControllers
                 = retrievedControllerRepository
                         .findByParent("baseFormController")
                         .orElse(null);
 
-        if (retrievedControllers != null) {
-            List<Callable<Boolean>> callables = retrievedControllers.stream()
-                    .map((retrievedController) -> createCallable(importCommand, retrievedController))
-                    .collect(Collectors.toList());
+        List<RetrievedController> multiActionController
+                = retrievedControllerRepository
+                .findByClassNameContaining(MULTI_ACTION_CONTROLLER_CLASS_NAME)
+                .orElse(null);
+        
+        List<Callable<Boolean>> callables = new ArrayList();
 
-            List<Future<Boolean>> futures;
-            try {
-                Instant start = Instant.now();
-                
-                futures = executorService.invokeAll(callables);
-                int success = 0;
-                int fail = 0;
-                for (Future<Boolean> future : futures) {
-                    if (future.get()) {
-                        success++;
-                    } else {
-                        fail++;
-                    }
-                }
-                
-                Instant finish = Instant.now();
-                long timeElapsed = Duration.between(start, finish).toMillis();
-                LOGGER.info("---------------------------------------------------------------------");
-                LOGGER.info("Generate form controller process summary: Duration : {} ms, Success: {}, Fail: {}", 
-                        timeElapsed, success, fail);
-                LOGGER.info("---------------------------------------------------------------------");
-            } catch (ExecutionException | InterruptedException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+        if (formControllers != null) {
+            callables.addAll(formControllers.stream()
+                    .map((retrievedController) -> createFormControllerCallable(importCommand, retrievedController))
+                    .collect(Collectors.toList()));
 
         }
+        
+        if(multiActionController != null){
+            callables.addAll(multiActionController.stream()
+                    .map((retrievedController) -> createMultiActionControllerCallable(importCommand, retrievedController))
+                    .collect(Collectors.toList()));
+        }
+
+        List<Future<Boolean>> futures;
+        try {
+            Instant start = Instant.now();
+
+            futures = executorService.invokeAll(callables);
+            int success = 0;
+            int fail = 0;
+            for (Future<Boolean> future : futures) {
+                if (future.get()) {
+                    success++;
+                } else {
+                    fail++;
+                }
+            }
+
+            Instant finish = Instant.now();
+            long timeElapsed = Duration.between(start, finish).toMillis();
+            LOGGER.info("----------------------------------------------------------------------------------------");
+            LOGGER.info("Generate form controller process summary: Duration : {} ms, Success: {}, Fail: {}",
+                    timeElapsed, success, fail);
+            LOGGER.info("----------------------------------------------------------------------------------------");
+        } catch (ExecutionException | InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
     }
 
-    private Callable<Boolean> createCallable(ImportCommand importCommand, RetrievedController retrievedController) {
+    private Callable<Boolean> createFormControllerCallable(
+            ImportCommand importCommand, RetrievedController retrievedController) {
         return (Callable<Boolean>) () -> {
             try {
                 formControllerGeneratorService.generate(
                         retrievedController,
                         importCommand.getInputPath(),
-                        importCommand.getOutputPath());
+                        importCommand.getOutputPath() + "/formController/");
+            } catch (ServiceException e) {
+                LOGGER.error("Error generating controller file : ", e);
+                return false;
+            }
+            return true;
+        };
+    }
+
+    private Callable<Boolean> createMultiActionControllerCallable(
+            ImportCommand importCommand, RetrievedController retrievedController) {
+        return (Callable<Boolean>) () -> {
+            try {
+                ImportCommand newImportCommand = new ImportCommand();
+                newImportCommand.setFileName(importCommand.getFileName());
+                newImportCommand.setInputPath(importCommand.getInputPath());
+                newImportCommand.setOutputPath(importCommand.getOutputPath() + "/multiactioncontroller/");
+                LOGGER.info("Output path : {}", newImportCommand.getOutputPath());
+                multiActionControllerGeneratorService.generate(retrievedController, newImportCommand);
             } catch (ServiceException e) {
                 LOGGER.error("Error generating controller file : ", e);
                 return false;

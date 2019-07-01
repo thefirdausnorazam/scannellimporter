@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,15 +45,19 @@ public class FormControllerGeneratorServiceImpl implements FormControllerGenerat
     private ControllerGeneratorUtilityService controllerGeneratorUtilityService;
 
     @Autowired
+    @Qualifier("formControllerGeneratorStep1")
     private Step1 step1;
 
     @Autowired
+    @Qualifier("formControllerGeneratorStep2")
     private Step2 step2;
 
     @Autowired
+    @Qualifier("formControllerGeneratorStep3")
     private Step3 step3;
 
     @Autowired
+    @Qualifier("formControllerGeneratorStep4")
     private Step4 step4;
 
     @Override

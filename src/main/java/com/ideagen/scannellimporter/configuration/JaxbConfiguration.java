@@ -5,7 +5,8 @@
  */
 package com.ideagen.scannellimporter.configuration;
 
-import com.ideagen.scannellimporter.model.xml.ControllerServletBean;
+import com.ideagen.scannellimporter.mode.bean.xml.ControllerServletBean;
+import com.ideagen.scannellimporter.mode.hibernate.xml.HibernateMapping;
 import java.util.HashMap;
 import javax.xml.bind.Marshaller;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,8 @@ public class JaxbConfiguration {
         marshaller.setSupportDtd(true);
         
         marshaller.setClassesToBeBound(new Class[]{
-            ControllerServletBean.class
+            ControllerServletBean.class,
+            HibernateMapping.class
         });
 
         marshaller.setMarshallerProperties(new HashMap<String, Object>() {

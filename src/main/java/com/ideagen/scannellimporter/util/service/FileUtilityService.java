@@ -6,6 +6,7 @@
 package com.ideagen.scannellimporter.util.service;
 
 import com.ideagen.scannellimporter.ServiceException;
+import com.ideagen.scannellimporter.entity.RetrievedController;
 import java.io.File;
 import java.nio.file.Path;
 
@@ -14,10 +15,12 @@ import java.nio.file.Path;
  * @author firdaus.norazam
  */
 public interface FileUtilityService {
-    
-    File searchForFile(String inputPath, String fileName)throws ServiceException;
-    
-    Path getPathFromImportLine(String importLine)throws ServiceException;
-    
+
+    File searchForFile(String inputPath, String fileName) throws ServiceException;
+
+    Path findPathFromImportLine(String importLine) throws ServiceException;
+
     File findFileFromImportLine(String inputLine, String importLine) throws ServiceException;
+    
+    Path findPathFromClass(RetrievedController retrievedController, String inputPath) throws ServiceException;
 }

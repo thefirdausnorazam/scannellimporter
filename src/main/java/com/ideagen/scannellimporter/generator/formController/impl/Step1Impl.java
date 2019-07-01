@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -36,7 +35,7 @@ import org.springframework.stereotype.Component;
  *
  * @author firdaus.norazam
  */
-@Component
+@Component("formControllerGeneratorStep1")
 public class Step1Impl implements Step1 {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
