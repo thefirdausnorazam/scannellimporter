@@ -5,8 +5,8 @@
  */
 package com.ideagen.scannellimporter.configuration;
 
-import com.ideagen.scannellimporter.mode.bean.xml.ControllerServletBean;
-import com.ideagen.scannellimporter.mode.hibernate.xml.HibernateMapping;
+import com.ideagen.scannellimporter.model.xml.bean.ControllerServletBean;
+import com.ideagen.scannellimporter.model.xml.hibernate.HibernateMapping;
 import java.util.HashMap;
 import javax.xml.bind.Marshaller;
 import org.springframework.context.annotation.Bean;

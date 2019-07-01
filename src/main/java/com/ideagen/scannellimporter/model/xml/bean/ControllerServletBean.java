@@ -3,30 +3,30 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ideagen.scannellimporter.mode.bean.xml;
+package com.ideagen.scannellimporter.model.xml.bean;
 
 import java.util.List;
-import javax.persistence.Embedded;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author firdaus.norazam
  */
+@XmlRootElement(name = "beans")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Props {
+public class ControllerServletBean {
     
-    @Embedded
-    @XmlElement(name = "prop")
-    private List<Prop> props;
+    @XmlElement(name = "bean")
+    private List<Bean> bean;
 
-    public List<Prop> getProps() {
-        return props;
+    public List<Bean> getBean() {
+        return bean;
     }
 
-    public void setProps(List<Prop> props) {
-        this.props = props;
+    public void setBean(List<Bean> bean) {
+        this.bean = bean;
     }
 }

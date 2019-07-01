@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ideagen.scannellimporter.mode.hibernate.xml;
+package com.ideagen.scannellimporter.model.xml.hibernate;
 
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -15,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author firdaus.norazam
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CollectionSet {
+public class CollectionList {
     
     @XmlAttribute(name = "name")
     private String name;
@@ -50,14 +51,17 @@ public class CollectionSet {
     @XmlElement(name = "element")
     private Element element;
     
+    @XmlElement(name = "list-index")
+    private ListIndex listIndex;
+    
     @XmlElement(name = "one-to-many")
-    private OneToMany oneToMany;
+    private List<OneToMany> oneToMany;
     
     @XmlElement(name = "many-to-one")
-    private ManyToOne manyToOne;
+    private List<ManyToOne> manyToOne;
     
     @XmlElement(name = "many-to-many")
-    private ManyToMany manyToMany;
+    private List<ManyToMany> manyToMany;
 
     public String getName() {
         return name;
@@ -147,27 +151,35 @@ public class CollectionSet {
         this.element = element;
     }
 
-    public OneToMany getOneToMany() {
+    public ListIndex getListIndex() {
+        return listIndex;
+    }
+
+    public void setListIndex(ListIndex listIndex) {
+        this.listIndex = listIndex;
+    }
+
+    public List<OneToMany> getOneToMany() {
         return oneToMany;
     }
 
-    public void setOneToMany(OneToMany oneToMany) {
+    public void setOneToMany(List<OneToMany> oneToMany) {
         this.oneToMany = oneToMany;
     }
 
-    public ManyToOne getManyToOne() {
+    public List<ManyToOne> getManyToOne() {
         return manyToOne;
     }
 
-    public void setManyToOne(ManyToOne manyToOne) {
+    public void setManyToOne(List<ManyToOne> manyToOne) {
         this.manyToOne = manyToOne;
     }
 
-    public ManyToMany getManyToMany() {
+    public List<ManyToMany> getManyToMany() {
         return manyToMany;
     }
 
-    public void setManyToMany(ManyToMany manyToMany) {
+    public void setManyToMany(List<ManyToMany> manyToMany) {
         this.manyToMany = manyToMany;
     }
 }

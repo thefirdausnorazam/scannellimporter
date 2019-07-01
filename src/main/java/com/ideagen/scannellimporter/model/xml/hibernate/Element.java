@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ideagen.scannellimporter.mode.hibernate.xml;
+package com.ideagen.scannellimporter.model.xml.hibernate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,13 +14,16 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author firdaus.norazam
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Discriminator {
+public class Element {
     
     @XmlAttribute(name = "column")
     private String column;
     
-    @XmlAttribute(name = "length")
-    private int length;
+    @XmlAttribute(name = "type")
+    private String type;
+    
+    @XmlAttribute(name = "not-null")
+    private Boolean notNull;
 
     public String getColumn() {
         return column;
@@ -30,11 +33,19 @@ public class Discriminator {
         this.column = column;
     }
 
-    public int getLength() {
-        return length;
+    public String getType() {
+        return type;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Boolean getNotNull() {
+        return notNull;
+    }
+
+    public void setNotNull(Boolean notNull) {
+        this.notNull = notNull;
     }
 }

@@ -5,7 +5,7 @@
  */
 package com.ideagen.scannellimporter.controller;
 
-import com.ideagen.scannellimporter.mode.hibernate.xml.HibernateMapping;
+import com.ideagen.scannellimporter.model.xml.hibernate.HibernateMapping;
 import java.io.StringReader;
 import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;

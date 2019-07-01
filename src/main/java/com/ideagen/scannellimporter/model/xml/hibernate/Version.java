@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ideagen.scannellimporter.mode.hibernate.xml;
+package com.ideagen.scannellimporter.model.xml.hibernate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,16 +14,16 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author firdaus.norazam
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class IdGenerator {
- 
-    @XmlAttribute(name = "class")
-    private String className;
+public class Version {
+    
+    @XmlAttribute(name = "name")
+    private String name;
 
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setName(String name) {
+        this.name = name;
     }
 }
