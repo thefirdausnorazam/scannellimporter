@@ -10,7 +10,6 @@ import com.ideagen.scannellimporter.generator.multiactionController.Step1;
 import com.ideagen.scannellimporter.model.ImportCommand;
 import com.ideagen.scannellimporter.repository.RetrievedControllerRepository;
 import com.ideagen.scannellimporter.service.MultiActionControllerGeneratorService;
-import static com.sun.tools.javac.jvm.ByteCodes.ret;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
