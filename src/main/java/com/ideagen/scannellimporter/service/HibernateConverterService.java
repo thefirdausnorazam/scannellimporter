@@ -5,11 +5,14 @@
  */
 package com.ideagen.scannellimporter.service;
 
+import com.ideagen.scannellimporter.ServiceException;
+import com.ideagen.scannellimporter.model.ImportCommand;
+
 /**
  *
  * @author firdaus.norazam
  */
 public interface HibernateConverterService {
-    
-    
+
+    void convert(ImportCommand importCommand) throws ServiceException;
 }

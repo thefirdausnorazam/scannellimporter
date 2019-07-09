@@ -7,7 +7,10 @@ package com.ideagen.scannellimporter.util.service.impl;
 
 import com.ideagen.scannellimporter.ServiceException;
 import com.ideagen.scannellimporter.entity.RetrievedController;
+import com.ideagen.scannellimporter.model.ImportCommand;
+import com.ideagen.scannellimporter.model.xml.hibernate.HibernateMapping;
 import com.ideagen.scannellimporter.util.service.FileUtilityService;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,12 +19,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author firdaus.norazam
  */
 @Component
@@ -35,7 +38,7 @@ public class FileUtilityServiceImpl implements FileUtilityService {
                 fileName, inputPath);
 
         try {
-            try ( Stream<Path> paths = Files.walk(Paths.get(inputPath))) {
+            try (Stream<Path> paths = Files.walk(Paths.get(inputPath))) {
                 return paths
                         .filter(Files::isRegularFile)
                         .filter(t -> t.toFile().getName().equals(fileName))
@@ -46,6 +49,11 @@ public class FileUtilityServiceImpl implements FileUtilityService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public File searchForFile(ImportCommand importCommand) throws ServiceException {
+        return searchForFile(importCommand.getInputPath(), importCommand.getFileName());
     }
 
     @Override
@@ -73,8 +81,8 @@ public class FileUtilityServiceImpl implements FileUtilityService {
 
             String packageLine = "package "
                     + importLines.stream()
-                            .filter(line -> !line.contains(";"))
-                            .collect(Collectors.joining("."))
+                    .filter(line -> !line.contains(";"))
+                    .collect(Collectors.joining("."))
                     + ";";
 
             String className = importLines
@@ -83,7 +91,7 @@ public class FileUtilityServiceImpl implements FileUtilityService {
                     .findAny()
                     .orElse("").replace(";", ".java");
 
-            try ( Stream<Path> paths = Files.walk(Paths.get(inputLine))) {
+            try (Stream<Path> paths = Files.walk(Paths.get(inputLine))) {
                 List<File> files = paths
                         .filter(Files::isRegularFile)
                         .filter(t -> t.toFile().getName().equals(className))
@@ -127,7 +135,7 @@ public class FileUtilityServiceImpl implements FileUtilityService {
             LOGGER.info("Finding original controller [inputPath : {}] [fileName : {}] [packageName : {}]",
                     inputPath, filaName, packageName);
 
-            try ( Stream<Path> paths = Files.walk(Paths.get(inputPath))) {
+            try (Stream<Path> paths = Files.walk(Paths.get(inputPath))) {
                 List<Path> pathList = paths
                         .filter(Files::isRegularFile)
                         .filter(t -> t.toFile().getName().equals(filaName))
@@ -150,5 +158,21 @@ public class FileUtilityServiceImpl implements FileUtilityService {
         }
 
         return null;
+    }
+
+    @Override
+    public Path findPathFromClass(HibernateMapping hibernateMapping, String inputPath) throws ServiceException {
+        try {
+            String classPath = hibernateMapping.getPackageName()
+                    + "."
+                    + hibernateMapping.getEntityClass().getName();
+
+            RetrievedController retrievedController = new RetrievedController();
+            retrievedController.setClassName(classPath);
+
+            return findPathFromClass(retrievedController, inputPath);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
     }
 }

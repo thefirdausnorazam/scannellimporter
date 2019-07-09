@@ -5,7 +5,9 @@
  */
 package com.ideagen.scannellimporter.controller;
 
+import com.ideagen.scannellimporter.model.ImportCommand;
 import com.ideagen.scannellimporter.model.xml.hibernate.HibernateMapping;
+import com.ideagen.scannellimporter.service.HibernateConverterService;
 import java.io.StringReader;
 import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
@@ -25,19 +27,26 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class HibernateConverterController {
-    
+
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    
+
     @Autowired
     private Jaxb2Marshaller marshaller;
-    
+
+    @Autowired
+    private HibernateConverterService hibernateConverterService;
+
     @PostMapping(value = "convertHibernateMappingToJson",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity convertFromXmlToJson(@RequestBody String hibernateMappingText) {
-        
-        LOGGER.info("Incoming convertHibernateMappingToJson request with XML body : \n{}", hibernateMappingText);
-        
+
+        LOGGER.info("Incoming convertHibernateMappingToJson request with XML body : \n"
+                + "--------------------------------XML Start----------------------------------------"
+                + "\n{}\n"
+                + "--------------------------------XML End------------------------------------------",
+                hibernateMappingText);
+
         try {
             return ResponseEntity.ok((HibernateMapping) marshaller
                     .unmarshal(new StreamSource(new StringReader(hibernateMappingText))));
@@ -45,5 +54,21 @@ public class HibernateConverterController {
             LOGGER.error(e.getMessage(), e);
             return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(value = "createHibernateEntity",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity createSingleHibernateEntity(
+            @RequestBody ImportCommand importCommand) {
+
+        try {
+            hibernateConverterService.convert(importCommand);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return ResponseEntity.ok("Ok");
     }
 }
